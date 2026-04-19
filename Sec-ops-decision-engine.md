@@ -71,6 +71,8 @@ These two languages communicate via RabbitMQ queues. The wire format (JSON) is t
 
 **Detection as code** — detection rules are YAML files, version controlled, testable against fixture data, and independent of the pipeline infrastructure. Rules can be added, modified, and tested without touching application code.
 
+**Raw event persistence** — currently raw log lines are preserved on alerts that trigger detection rules via the `raw_log` field. Persistence of all normalised events independent of rule firing is planned when the detection recommendation engine is built.
+
 **Feedback loop** — human override decisions are recorded alongside the original triage decision. Over time this data informs detection rule effectiveness, false positive rates, and LLM prompt tuning.
 
 ---
@@ -196,8 +198,9 @@ Decisions: `escalate` | `auto_close` | `human_review`
 
 ## Roadmap
 
-- [ ] Detection recommendation engine — pattern mining, gap analysis, LLM-assisted rule generation
-- [ ] Log ingestion layer — HTTP collector, syslog listener, auth log parser
+- [ ] Detection recommendation engine
+      — [ ] pattern mining, gap analysis, LLM-assisted rule generation
+- [x] Log ingestion layer — HTTP collector - [ ] syslog listener, auth log parser
 - [ ] OCSF schema alignment
 - [ ] Additional indicator types — domain, hash, URL enrichment
 - [ ] Sigma rule compatibility

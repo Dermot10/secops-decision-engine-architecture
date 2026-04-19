@@ -80,3 +80,13 @@ These are subject to change if remodelling of the system occurs.
 **Context** — alert producers (Detection-as-Code, manual submissions) submit alerts without IDs.
 
 **Reasoning** — the gateway is the authoritative source of truth for alert identity. Client-supplied IDs cannot be trusted for uniqueness and create a surface for ID collision or spoofing. Assigning server-side ensures every alert has a globally unique, gateway-issued identifier that is consistent across MongoDB, RabbitMQ, and all downstream consumers.
+
+---
+
+## ADR-008: Raw Event persistence
+
+**Decision** - currently only storing raw logs for alerts that trigger detection rules via `raw_log` field. Eventually I will settle on either a fan-out approach in which the log ingestion layer will send two events and the raw_event_id will be used for idempotency to ensure the triage worker does not trigger twice.
+
+**Context** - historical raw log data will be required to trained the recommendation engine for the DaC service, so it will require entire context for data.
+
+**Reasoning** - Currently at MVP stage this will keep DaC service independent of non-triggered alerts allowing it to be a single responsibility service and reduce multiple points of failure.
