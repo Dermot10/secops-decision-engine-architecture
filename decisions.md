@@ -83,10 +83,10 @@ These are subject to change if remodelling of the system occurs.
 
 ---
 
-## ADR-008: Raw Event persistence
+## ADR-008: Situational use of Waitgroup > Errgroup
 
-**Decision** - currently only storing raw logs for alerts that trigger detection rules via `raw_log` field. Eventually I will settle on either a fan-out approach in which the log ingestion layer will send two events and the raw_event_id will be used for idempotency to ensure the triage worker does not trigger twice.
+**Decision** - for fan-out messaging within the log ingestion service using waitgroup to handle concurrent goroutines as opposed to errgroup
 
-**Context** - historical raw log data will be required to trained the recommendation engine for the DaC service, so it will require entire context for data.
+**Context** - wait group choice for log ingestion service's publisher module fan-out function.
 
-**Reasoning** - Currently at MVP stage this will keep DaC service independent of non-triggered alerts allowing it to be a single responsibility service and reduce multiple points of failure.
+**Reasoning** - co-ordinates completion without coupling both goroutines and coupling outcomes for both raw and triggered events. Each goroutine will log it's own error and each respective caller proceeds regardless. Errgroup would be more favourable for all-or-nothing semantics, better for multi-step data fetch where partial results are useless.
