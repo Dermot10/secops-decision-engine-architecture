@@ -160,3 +160,19 @@ These are subject to change if remodelling of the system occurs.
 **Context** - Each source was independently constructing and tearing down an `httpx.AsyncClient` per enrichment call, discarding the connection pool after a single use.
 
 **Reasoning** - A shared client maintains a connection pool across all sources and all requests - TCP connections are reused between concurrent source calls during `gather`, Per-request client construction adds latency and resource overhead that compounds under load. Lifecycle tied to app startup and shutdown ensures clean resource management via `aclose()` on shutdown, consistent with the existing lifespan infrastructure pattern.
+
+## ADR-016: Integrated Agent Workflow to Main
+
+**Decision** - Unified the Langgraph and Langchain orchestration tests and tool set up into the main code base
+
+**Context** - Refactored Triage worker's agent logic to account for the integrated agent workflow. Required abstractions are the HTTP clients to be created and decoupling them from the service logic.
+
+**Reasoning** - With the fast-path decoupled from the service the introduction of the langchain tools this makes the langGraph ReAct loop feasible and coordinated by a decision function at the service layer triggering said deep agent work.
+
+## ADR-017: Refactored RAGs Pipeline logic
+
+**Decision** - Turned RAGs search function into tool.
+
+**Context** - Creating a tool for the RAGs functionality on the triage worker makes the process usable like any other enrichment langchain tool.
+
+**Reasoning** - Unifying the project structure for better design, although leaving the `try/except` logic at the tool as it is specific and agent-reasoning language ("Proceed without this context").
