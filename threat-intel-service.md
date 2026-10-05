@@ -19,9 +19,9 @@ A FastAPI service that enriches indicators of compromise against multiple threat
 
 ```
 GET /v1/intel/ip/{indicator}
-GET /v1/intel/domain/{indicator}    (planned)
-GET /v1/intel/hash/{indicator}      (planned)
-GET /v1/intel/url/{indicator}       (planned)
+GET /v1/intel/domain/{indicator}
+GET /v1/intel/hash/{indicator}
+GET /v1/intel/url/{indicator}
 
 GET /health
 ```
@@ -34,6 +34,8 @@ GET /health
 | ---------- | --------------------- | ------------------------------------------------------------ |
 | AbuseIPDB  | IP                    | Abuse confidence score, Tor exit node, report count          |
 | VirusTotal | IP, domain, hash, URL | Malicious engine count, suspicious engines, tags, reputation |
+| GreyNoise  | IP                    | Internet scanning activity, classification, RIOT membership  |
+| GreyNoise  | IP                    | Internet scanning activity, classification, RIOT membership  |
 | GreyNoise  | IP                    | Internet scanning activity, classification, RIOT membership  |
 
 Sources are isolated — each lives in its own module and returns a typed tuple of `(parsed_response, signals, reasons)`. A failed source is recorded in `sources_failed` and the pipeline continues with remaining sources.

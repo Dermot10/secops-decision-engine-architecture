@@ -161,3 +161,62 @@ detections/
 - Detection recommendation engine — pattern mining on event history to suggest new rules
 - Sigma rule compatibility — import and convert community Sigma rules
 - AI-assisted rule generation — LLM produces candidate rules from identified patterns
+
+## TODO
+
+# Provisional General Notes
+
+Rules loaded into the app's state, within the lifespan function
+VCS (version control system)
+
+# Webhook Process
+
+A webhook essentially being an exposed HTTP endpoint that another system calls when an event happens -
+-> Opposite to polling, this push based mechanic
+
+The service exposes an endpoint
+That endpoint is registered with GitHub as a webhook URL
+GitHub sends a HTTP Post when an event occurs
+Service validates request/signature
+Service decides on event
+-> Performs action, reloads etc
+
+GitHub push -> webhook validation -> event/branch filtering -> detection change detected -> file synchronisation -> rule reload
+
+GitHub source of truth
+Webhooks authenticated with HMAC SHA-256 signature before payload is processed
+Push events only
+Only pushes to configured branches trigger processing
+Webhook inspects the push commits and only reacts to YAML/YML files beneath configued detection path have been added or modified.
+VSClient handles communication and is injected into Webhook, abstracts github API away
+Repo paths are translated into local storage first before writing (design decision)
+After synchronisation. Full load of rules again (design decision)
+Reconciliation of remote and local file deletion (design decision)
+Failures -> 500 response
+Dependency injection of webhook independent of concrete githubClient and ruleRunner implementations - testability and interchangeability.
+
+## Semantics
+
+SHA in Github is the identifier (hash) for a particular Git object/version
+
+- updates the current version of the file, required for the file being updated
+- commit["sha"] identifies the new commit commit created by the update
+
+Python text → UTF-8 bytes → Base64 string → GitHub API → decoded file content
+
+## Structure
+
+VCS Component
+`__init__.py ` declares naming for function which package should consider public exports
+
+VCS Client Base defines abstract functionality for any VC to use - requires read, list, write and validation functionality
+GitHub Client inherits and satisfies, populated by dependencies and helper injects at runtime into the Webhook handler
+
+- Read
+- List
+- Write
+  - Direct
+  - Pull request
+- Validate
+
+# Detection Ingestion Process
